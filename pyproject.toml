@@ -1,0 +1,7 @@
+[project]
+name = "ca1-smarttech"
+version = "0.1.0"
+description = "CA 1 for Smart Tech"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
