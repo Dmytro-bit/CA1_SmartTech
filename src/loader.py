@@ -2,31 +2,7 @@ import pickle
 import re
 from pathlib import Path
 
-import numpy as np
-
-
-def merge_batches(batches: list[dict]) -> dict:
-    if not batches:
-        return {}
-
-    keys = batches[0].keys()
-    if any(batch.keys() != keys for batch in batches[1:]):
-        raise ValueError("all batches must contain the same keys")
-
-    merged = {}
-    for key in keys:
-        values = [batch[key] for batch in batches]
-
-        if all(isinstance(value, np.ndarray) for value in values):
-            merged[key] = np.concatenate(values, axis=0)
-        elif all(isinstance(value, list) for value in values):
-            merged[key] = [item for value in values for item in value]
-        elif all(isinstance(value, tuple) for value in values):
-            merged[key] = tuple(item for value in values for item in value)
-        else:
-            merged[key] = values
-
-    return merged
+from utils import merge_batches
 
 
 def loads(path: Path, /, pattern: str) -> dict:
