@@ -79,6 +79,6 @@ def explore_datagen(datagen, X_train, y_train):
     fig, axs = plt.subplots(1, 15, figsize=(20, 5))
     fig.tight_layout()
     for i in range(15):
-        axs[i].imshow(X_batch[i].reshape(32, 32))
+        axs[i].imshow(np.clip(X_batch[i], 0.0, 1.0))
         axs[i].axis('off')
     plt.show()

@@ -1,14 +1,21 @@
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, Dense
+import logging
+
+import matplotlib.pyplot as plt
 from tensorflow.keras.layers import Dropout, Flatten, Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils import to_categorical
-import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.utils import to_categorical
+
+logger = logging.getLogger(__name__)
+
 
 def create_data_generator():
-    datagen = ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1, zoom_range=0.2, shear_range=0.1, rotation_range=10)
+    datagen = ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1, zoom_range=0.2,
+                                 rotation_range=10)
     return datagen
+
 
 def one_hot_encode(num_classes, y_train, y_val, y_test):
     y_train = to_categorical(y_train, num_classes)
@@ -17,17 +24,10 @@ def one_hot_encode(num_classes, y_train, y_val, y_test):
     return y_train, y_val, y_test
 
 
-def reshape_for_cnn(X_train, X_val, X_test):
-    return (
-        X_train[..., np.newaxis],
-        X_val[..., np.newaxis],
-        X_test[..., np.newaxis],
-    )
-
 
 def modified_model(num_classes):
     model = Sequential()
-    model.add(Input(shape=(32, 32, 1)))
+    model.add(Input(shape=(32, 32, 3)))
     model.add(Conv2D(60, (5, 5), activation='relu'))
     model.add(Conv2D(60, (5, 5), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2,2)))
