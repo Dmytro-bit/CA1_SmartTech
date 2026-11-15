@@ -93,7 +93,6 @@ def show_training_samples(num_classes, data: dict[int, str], X_train, y_train):
 
 
 def explore_datagen(datagen, X_train, y_train):
-    datagen.fit(X_train)
     batches = datagen.flow(X_train, y_train, batch_size=20)
     X_batch, y_batch = next(batches)
     fig, axs = plt.subplots(1, 15, figsize=(20, 5))
