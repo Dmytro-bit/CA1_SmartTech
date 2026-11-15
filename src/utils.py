@@ -1,5 +1,24 @@
+import logging
+from datetime import datetime
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+from config import DATAPATH
+
+logger = logging.getLogger(__name__)
+
+
+def save_figure(figure, name: str) -> Path:
+    chart_directory = DATAPATH / "charts"
+    chart_directory.mkdir(parents=True, exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    chart_path = chart_directory / f"{name}_{timestamp}.png"
+    figure.savefig(chart_path, dpi=200, bbox_inches="tight")
+    logger.info("Chart saved to %s", chart_path)
+    return chart_path
 
 
 def merge_batches(batches: list[dict]) -> dict:
@@ -68,6 +87,7 @@ def show_training_samples(num_classes, data: dict[int, str], X_train, y_train):
             axis.set_yticks([])
 
     figure.tight_layout()
+    save_figure(figure, "training_samples")
     plt.show()
     return sample_counts
 
@@ -77,8 +97,9 @@ def explore_datagen(datagen, X_train, y_train):
     batches = datagen.flow(X_train, y_train, batch_size=20)
     X_batch, y_batch = next(batches)
     fig, axs = plt.subplots(1, 15, figsize=(20, 5))
-    fig.tight_layout()
     for i in range(15):
         axs[i].imshow(np.clip(X_batch[i], 0.0, 1.0))
         axs[i].axis('off')
+    fig.tight_layout()
+    save_figure(fig, "augmented_samples")
     plt.show()
