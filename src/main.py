@@ -1,6 +1,7 @@
 import loader
 from config import *
 from data_processing import process_c10_data, process_c100_data, apply_preprocessing, split_data
+from model import modified_model, reshape_for_cnn, one_hot_encode, create_data_generator
 from utils import merge_two_np_arrays, show_training_samples, explore_datagen
 
 set_logger_config()
@@ -30,6 +31,16 @@ def main():
 
     X_train, X_val, X_test = apply_preprocessing(X_train, X_valid, merged_test_images)
     num_of_each_type = show_training_samples(NUM_OF_CLASSES, INDEXES_LABELS, X_train, y_train)
+
+    X_train, X_val, X_test = reshape_for_cnn(X_train, X_val, X_test)
+    y_train, y_val, y_test = one_hot_encode(NUM_OF_CLASSES, y_train, y_valid, merged_test_labels)
+
+    model = modified_model(NUM_OF_CLASSES)
+
+    model.summary(print_fn=logger.info)
+
+    datagen = create_data_generator()
+    explore_datagen(datagen, X_train, y_train)
 
     return
 

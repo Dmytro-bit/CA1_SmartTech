@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -23,6 +24,7 @@ def merge_batches(batches: list[dict]) -> dict:
             merged[key] = values
 
     return merged
+
 
 def merge_two_np_arrays(p1, p2):
     return np.concatenate([p1, p2], axis=0)
@@ -68,3 +70,15 @@ def show_training_samples(num_classes, data: dict[int, str], X_train, y_train):
     figure.tight_layout()
     plt.show()
     return sample_counts
+
+
+def explore_datagen(datagen, X_train, y_train):
+    datagen.fit(X_train)
+    batches = datagen.flow(X_train, y_train, batch_size=20)
+    X_batch, y_batch = next(batches)
+    fig, axs = plt.subplots(1, 15, figsize=(20, 5))
+    fig.tight_layout()
+    for i in range(15):
+        axs[i].imshow(X_batch[i].reshape(32, 32))
+        axs[i].axis('off')
+    plt.show()
