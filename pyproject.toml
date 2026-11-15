@@ -5,7 +5,11 @@ description = "CA 1 for Smart Tech"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "matplotlib>=3.11.2",
     "numpy>=2.5.4",
+    "opencv-python-headless>=5.0.0.93",
+    "scipy>=1.18.1",
+    "tensorflow-cpu==2.21.0",
 ]
 
 [dependency-groups]
