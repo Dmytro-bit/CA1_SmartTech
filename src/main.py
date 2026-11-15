@@ -1,19 +1,9 @@
-from itertools import chain
-from pathlib import Path
-
 import loader
 from utils import process_data, merge_two_np_arrays
+from config import *
 
-CIFAR_10_LABELS = ["automobile", "bird", "cat", "deer", "dog", "horse", "truck"]
-CIFAR_100_LABELS = ["cattle", "fox", "baby", "boy", "girl", "man", "woman", "rabbit", "squirrel", "bicycle",
-                    "bus", "motorcycle", "pickup_truck", "train", "lawn_mower", "tractor"]
-CIFAR_100_SUPER_LABELS = ["trees"]
-
-DATAPATH = Path(__file__).resolve().parent.parent / "data"
-
-ALL_LABELS = list(dict.fromkeys(chain(CIFAR_10_LABELS, CIFAR_100_LABELS, CIFAR_100_SUPER_LABELS)))
-LABEL_INDEXES = {label: index for index, label in enumerate(ALL_LABELS)}
-INDEXES_LABELS = {index: label for label, index in LABEL_INDEXES.items()}
+set_logger_config()
+logger = logging.getLogger(__name__)
 
 
 def main():
