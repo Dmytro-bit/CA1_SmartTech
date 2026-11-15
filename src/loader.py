@@ -22,23 +22,33 @@ def loads(path: Path, /, pattern: str) -> dict:
     return merge_batches(batches)
 
 
-def load_c10(path):
+def load_c10_test(path):
     with open(path / 'cifar-10-batches-py/batches.meta', 'rb') as f:
         metadata = pickle.load(f, encoding='bytes')
     with open(path / 'cifar-10-batches-py/test_batch', 'rb') as f:
         test_data = pickle.load(f, encoding='bytes')
+    return metadata, test_data
+
+
+def load_c10(path):
+    metadata, test_data = load_c10_test(path)
 
     batch = loads(path / 'cifar-10-batches-py', r"data_batch_\d+")
     return metadata, batch, test_data
 
-def load_c100(path):
+
+def load_c100_test(path):
     with (path / "cifar-100-python" / "meta").open("rb") as f:
         metadata = pickle.load(f, encoding="bytes")
+    with (path / "cifar-100-python" / "test").open("rb") as f:
+        test_data = pickle.load(f, encoding="bytes")
+    return metadata, test_data
+
+
+def load_c100(path):
+    metadata, test_data = load_c100_test(path)
 
     with (path / "cifar-100-python" / "train").open("rb") as f:
         batch = pickle.load(f, encoding="bytes")
-
-    with (path / "cifar-100-python" / "test").open("rb") as f:
-        test_data = pickle.load(f, encoding="bytes")
 
     return metadata, batch, test_data

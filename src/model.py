@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
 from pathlib import Path
-
+from urllib.parse import quote
+import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.layers import (
@@ -14,13 +15,14 @@ from tensorflow.keras.layers import (
     Input,
     MaxPooling2D,
 )
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.utils import get_file, img_to_array, load_img
 
 from utils import save_figure
-from config import DATAPATH
+from config import DATAPATH, INDEXES_LABELS
 
 logger = logging.getLogger(__name__)
 
@@ -153,3 +155,29 @@ def evaluate_model(
     logger.info("Test loss: %.4f", score[0])
     logger.info("Test accuracy: %.4f", score[1])
 
+
+def predict_image_url(model, image_url, top_k=5):
+    # Downloads into the Keras cache directory.
+    image_path = get_file(origin=image_url)
+
+    image = load_img(
+        image_path,
+        color_mode="rgb",
+        target_size=(32, 32),
+    )
+
+    image_array = img_to_array(image).astype(np.float32) / 255.0
+
+    # Change (32, 32, 3) into a batch: (1, 32, 32, 3).
+    image_batch = np.expand_dims(image_array, axis=0)
+
+    probabilities = model.predict(image_batch, verbose=0)[0]
+    best_indexes = np.argsort(probabilities)[-top_k:][::-1]
+
+    return [
+        {
+            "label": INDEXES_LABELS[int(index)],
+            "probability": round(float(probabilities[index]) * 100, 2),
+        }
+        for index in best_indexes
+    ]
