@@ -1,7 +1,7 @@
 import loader
 from config import *
 from data_processing import process_c10_data, process_c100_data, apply_preprocessing, split_data
-from model import modified_model, reshape_for_cnn, one_hot_encode, create_data_generator
+from model import modified_model, reshape_for_cnn, one_hot_encode, create_data_generator, evaluate_model
 from utils import merge_two_np_arrays, show_training_samples, explore_datagen
 
 set_logger_config()
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    #Load pikle objects
+    # Load pikle objects
     metadata_c10, batch_c10, test_c10 = loader.load_c10(DATAPATH)
     metadata_c100, batch_c100, test_c100 = loader.load_c100(DATAPATH)
 
@@ -41,6 +41,8 @@ def main():
 
     datagen = create_data_generator()
     explore_datagen(datagen, X_train, y_train)
+
+    evaluate_model(model, X_train, y_train, X_val, y_val, X_test, y_test, datagen)
 
     return
 

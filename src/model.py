@@ -40,3 +40,24 @@ def modified_model(num_classes):
     model.add(Dense(num_classes, activation='softmax'))
     model.compile(Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
+
+
+def evaluate_model(model, X_train, y_train, X_val, y_val, X_test, y_test, datagen):
+    datagen.fit(X_train)
+    history = model.fit(datagen.flow(X_train, y_train, batch_size=50), epochs=100, validation_data=(X_val, y_val),
+                        verbose=1, shuffle=1)
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.legend(['training', 'validation'])
+    plt.title("Accuracy")
+    plt.xlabel("Epoch")
+    plt.show()
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.legend(['training', 'validation'])
+    plt.title("Loss")
+    plt.xlabel("Epoch")
+    plt.show()
+    score = model.evaluate(X_test, y_test, verbose=1)
+    logger.info("Test loss: %.4f", score[0])
+    logger.info("Test accuracy: %.4f", score[1])
