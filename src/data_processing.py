@@ -1,6 +1,5 @@
 import logging
 
-import cv2
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -11,7 +10,7 @@ b_ut8 = lambda x: bytes(x, "utf-8")  # definitely unsign long
 
 
 def split_data(images, labels):
-    X_train, X_valid, y_train, y_valid = train_test_split(images, labels, test_size=0.1, random_state=77)
+    X_train, X_valid, y_train, y_valid = train_test_split(images, labels, test_size=0.1, random_state=77, stratify=labels)
     logger.info(f"Training samples {len(X_train)}, Validation samples {len(X_valid)}")
     return X_train, X_valid, y_train, y_valid
 
@@ -76,10 +75,7 @@ def apply_preprocessing(X_train, X_val, X_test):
 
 def preprocessing(img):
     img = reshape_cifar_image(img)
-    img = grayscale(img)
-    img = equalize(img)
-    img = img / 255
-    return img
+    return img.astype(np.float32) / 255.0
 
 
 def reshape_cifar_image(img):
@@ -94,14 +90,3 @@ def reshape_cifar_image(img):
         f"Expected image with shape (3072,), (3, 32, 32), or "
         f"(32, 32, 3); got {img.shape}"
     )
-
-
-def grayscale(img):
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    return img
-
-
-def equalize(img):
-    # This only works for grayscale images
-    img = cv2.equalizeHist(img)
-    return img
