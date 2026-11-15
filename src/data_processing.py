@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 
 from config import CIFAR_10_LABELS, CIFAR_100_LABELS, LABEL_INDEXES
@@ -54,3 +55,43 @@ def process_c100_data(metadata, batch):
         selected_labels=CIFAR_100_LABELS,
         unified_indexes=LABEL_INDEXES,
     )
+
+
+def apply_preprocessing(X_train, X_val, X_test):
+    X_train = np.array(list(map(preprocessing, X_train)))
+    X_val = np.array(list(map(preprocessing, X_val)))
+    X_test = np.array(list(map(preprocessing, X_test)))
+    return X_train, X_val, X_test
+
+
+def preprocessing(img):
+    img = reshape_cifar_image(img)
+    img = grayscale(img)
+    img = equalize(img)
+    img = img / 255
+    return img
+
+
+def reshape_cifar_image(img):
+    img = np.asarray(img)
+    if img.shape == (3 * 32 * 32,):
+        return img.reshape(3, 32, 32).transpose(1, 2, 0)
+    if img.shape == (3, 32, 32):
+        return img.transpose(1, 2, 0)
+    if img.shape == (32, 32, 3):
+        return img
+    raise ValueError(
+        f"Expected image with shape (3072,), (3, 32, 32), or "
+        f"(32, 32, 3); got {img.shape}"
+    )
+
+
+def grayscale(img):
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    return img
+
+
+def equalize(img):
+    # This only works for grayscale images
+    img = cv2.equalizeHist(img)
+    return img

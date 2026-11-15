@@ -1,7 +1,8 @@
 import loader
-from utils import process_data, merge_two_np_arrays
 from config import *
-from data_processing import process_c10_data, process_c100_data
+from data_processing import process_c10_data, process_c100_data, apply_preprocessing
+from utils import merge_two_np_arrays, show_training_samples, explore_datagen
+from utils import merge_two_np_arrays, show_training_samples
 
 set_logger_config()
 logger = logging.getLogger(__name__)
@@ -23,10 +24,11 @@ def main():
     # Merge two datasets in one (train, test)
     merged_train_labels = merge_two_np_arrays(c10_labels, c100_labels)
     merged_train_images = merge_two_np_arrays(c10_images, c100_images)
-
     merged_test_labels = merge_two_np_arrays(test_c10_labels, test_c100_labels)
     merged_test_images = merge_two_np_arrays(test_c10_images, test_c100_images)
 
+    X_train, X_val, X_test = apply_preprocessing(merged_train_images, [], merged_test_images)
+    num_of_each_type = show_training_samples(NUM_OF_CLASSES, INDEXES_LABELS, X_train, merged_train_labels)
 
     return
 
