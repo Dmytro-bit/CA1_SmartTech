@@ -1,9 +1,19 @@
+import logging
+
 import cv2
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from config import CIFAR_10_LABELS, CIFAR_100_LABELS, LABEL_INDEXES
 
+logger = logging.getLogger(__name__)
 b_ut8 = lambda x: bytes(x, "utf-8")  # definitely unsign long
+
+
+def split_data(images, labels):
+    X_train, X_valid, y_train, y_valid = train_test_split(images, labels, test_size=0.1, random_state=77)
+    logger.info(f"Training samples {len(X_train)}, Validation samples {len(X_valid)}")
+    return X_train, X_valid, y_train, y_valid
 
 
 # get filtered labels and images
