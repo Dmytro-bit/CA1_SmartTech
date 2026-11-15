@@ -3,14 +3,16 @@ import logging
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from config import CIFAR_10_LABELS, CIFAR_100_LABELS, LABEL_INDEXES
+from config import CIFAR_10_LABELS, CIFAR_100_LABELS, LABEL_INDEXES, CIFAR_100_SUPER_LABELS
+from utils import merge_two_np_arrays
 
 logger = logging.getLogger(__name__)
 b_ut8 = lambda x: bytes(x, "utf-8")  # definitely unsign long
 
 
 def split_data(images, labels):
-    X_train, X_valid, y_train, y_valid = train_test_split(images, labels, test_size=0.1, random_state=77, stratify=labels)
+    X_train, X_valid, y_train, y_valid = train_test_split(images, labels, test_size=0.1, random_state=77,
+                                                          stratify=labels)
     logger.info(f"Training samples {len(X_train)}, Validation samples {len(X_valid)}")
     return X_train, X_valid, y_train, y_valid
 
@@ -55,7 +57,7 @@ def process_c10_data(metadata, batch):
 
 
 def process_c100_data(metadata, batch):
-    return process_data(
+    c100_labels, c100_images = process_data(
         metadata=metadata,
         metadata_key="fine_label_names",
         batch=batch,
@@ -64,6 +66,16 @@ def process_c100_data(metadata, batch):
         selected_labels=CIFAR_100_LABELS,
         unified_indexes=LABEL_INDEXES,
     )
+    c100_tree_labels, c100_tree_images = process_data(
+        metadata=metadata,
+        metadata_key="coarse_label_names",
+        batch=batch,
+        label_key="coarse_labels",
+        images_key="data",
+        selected_labels=CIFAR_100_SUPER_LABELS,
+        unified_indexes=LABEL_INDEXES,
+    )
+    return merge_two_np_arrays(c100_labels, c100_tree_labels), merge_two_np_arrays(c100_images, c100_tree_images)
 
 
 def apply_preprocessing(X_train, X_val, X_test):
